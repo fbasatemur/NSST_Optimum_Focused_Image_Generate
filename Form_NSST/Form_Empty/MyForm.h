@@ -199,7 +199,6 @@ namespace Form_Empty {
 		}
 #pragma endregion
 	private: System::Void openToolStripMenuItem1_Click(System::Object^ sender, System::EventArgs^ e) {
-
 		if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 		{
 			long size;
@@ -320,6 +319,7 @@ namespace Form_Empty {
 				delete[] buffer;
 				delete[] IXYBuffer;
 				delete dst;
+
 			}
 
 			// AFK => "Fuzyon Secme Kurali 1" - step 2

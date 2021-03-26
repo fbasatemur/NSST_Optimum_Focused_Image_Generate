@@ -28,5 +28,13 @@ Matrix* NsstRec1(Cont* dst, const char* lpfilt) {
 		y->mats[i] = Sum(dst->mats[i], 3);
 	}
 	
-	return AtrousRec(y, lpfilt);
+	Matrix* ret = AtrousRec(y, lpfilt);
+	int depth;
+	for (size_t cell = 1; cell < 5; cell++) {
+
+		depth = y->mats[cell]->depth;
+		for (size_t d = 0; d < depth; d++)
+			delete[] y->mats[cell][d].mat;
+	}
+	return ret;
 }
