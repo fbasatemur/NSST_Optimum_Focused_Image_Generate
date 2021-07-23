@@ -3,7 +3,7 @@
 #include "NsstDec.h"
 #include "MatlabFuncs.h"
 #include "NSSTFuncs.h"
-
+#include "FFT_Conv2D.h"
 
 
 /// <summary>
@@ -33,9 +33,7 @@ Cont* NsstDec1e(Matrix* image, const ShearParameters& shearParam, Cont* filters,
 
 	Cont* dst = new Cont(level + 1);
 	dst->mats[0] = y->mats[0];
-
 	Cont* shearF = new Cont(level);
-
 
 	for (int i = 0; i < level; i++)
 	{
@@ -44,16 +42,15 @@ Cont* NsstDec1e(Matrix* image, const ShearParameters& shearParam, Cont* filters,
 		shearF->CreateCells(i,size);
 		
 		for (int k = 0; k < size; k++) {
-			shearF->mats[i][k] = *ScalarMatMul(shearFilterMyer[i][k], sqrt(shearParam.dsize[i]));
-			dst->mats[i + 1][k] = *Conv2(y->mats[i + 1], &shearF->mats[i][k], "same");	 // Cok yonluluk 
+			shearF->mats[i][k] = ScalarMatMul(shearFilterMyer[i][k], sqrt(shearParam.dsize[i]));
+			//dst->mats[i + 1][k] = Conv2(y->mats[i + 1], &shearF->mats[i][k], "same");	 // Cok yonluluk 
+			dst->mats[i + 1][k] = FFTConv2D(y->mats[i + 1], &shearF->mats[i][k], "same");	 // Cok yonluluk 
 		}	
-
 		dst->mats[i + 1]->depth = size;
 	}
 
 	delete shearF;
-
-	int depth;
+	size_t depth;
 	for (size_t cell = 1; cell < 5; cell++) {
 
 		depth = y->mats[cell]->depth;

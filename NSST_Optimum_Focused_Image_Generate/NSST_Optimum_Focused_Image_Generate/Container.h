@@ -64,6 +64,13 @@ public:
 		}
 	}
 
+	void operator=(Matrix* b) {
+		this->height = b->height;
+		this->width = b->width;
+		this->depth = b->depth;
+		this->mat = b->mat;
+	}
+
 };
 
 // Cont => Container class
@@ -87,7 +94,7 @@ public:
 	~Cont(){
 
 		int depth;
-		for (size_t cell = 0; cell < matNums; cell++) {
+		for (size_t cell = 0; cell < this->matNums; cell++) {
 
 			depth = mats[cell]->depth;
 			for (size_t d = 0; d < depth; d++)

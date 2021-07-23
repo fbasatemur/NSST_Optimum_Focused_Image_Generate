@@ -14,8 +14,8 @@
     <ProjectGuid>{20158D6F-6C39-4D9A-9FFB-6FEA71E567DC}</ProjectGuid>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
-    <RootNamespace>Form_Empty</RootNamespace>
-    <ProjectName>NSST_Form</ProjectName>
+    <RootNamespace>NSST_Focused_Image_Form</RootNamespace>
+    <ProjectName>NSST_Optimum_Focused_Image_Generate</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -82,9 +82,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FFT.cpp" />
+    <ClCompile Include="FFT_Conv2D.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="MatlabFuncs.cpp" />
-    <ClCompile Include="MyForm.cpp" />
+    <ClCompile Include="NSST_Focused_Image_Form.cpp" />
     <ClCompile Include="NsstDec.cpp" />
     <ClCompile Include="NsstRec.cpp" />
     <ClCompile Include="Process.cpp" />
@@ -93,9 +94,10 @@
   <ItemGroup>
     <ClInclude Include="Container.h" />
     <ClInclude Include="FFT.h" />
+    <ClInclude Include="FFT_Conv2D.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="MatlabFuncs.h" />
-    <ClInclude Include="MyForm.h">
+    <ClInclude Include="NSST_Focused_Image_Form.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="NsstDec.h" />
@@ -105,8 +107,8 @@
     <ClInclude Include="ShearParameters.h" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MyForm.resx">
-      <DependentUpon>MyForm.h</DependentUpon>
+    <EmbeddedResource Include="NSST_Focused_Image_Form.resx">
+      <DependentUpon>NSST_Focused_Image_Form.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

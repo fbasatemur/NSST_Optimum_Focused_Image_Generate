@@ -15,7 +15,7 @@
 
 #define RANGE0255(a) (a < 0 ? 0 : ((a > 255) ? 255 : a))
 
-namespace Form_Empty {
+namespace NSST_Focused_Image_Form {
 
 	using namespace System;
 	using namespace System::ComponentModel;
@@ -27,10 +27,10 @@ namespace Form_Empty {
 	/// <summary>
 	/// Summary for MyForm
 	/// </summary>
-	public ref class MyForm : public System::Windows::Forms::Form
+	public ref class NSST_Focused_Image_Form : public System::Windows::Forms::Form
 	{
 	public:
-		MyForm(void)
+		NSST_Focused_Image_Form(void)
 		{
 			InitializeComponent();
 			//
@@ -42,7 +42,7 @@ namespace Form_Empty {
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
-		~MyForm()
+		~NSST_Focused_Image_Form()
 		{
 			if (components)
 			{
@@ -117,7 +117,7 @@ namespace Form_Empty {
 			this->openToolStripMenuItem1->Name = L"openToolStripMenuItem1";
 			this->openToolStripMenuItem1->Size = System::Drawing::Size(128, 26);
 			this->openToolStripMenuItem1->Text = L"Open";
-			this->openToolStripMenuItem1->Click += gcnew System::EventHandler(this, &MyForm::openToolStripMenuItem1_Click);
+			this->openToolStripMenuItem1->Click += gcnew System::EventHandler(this, &NSST_Focused_Image_Form::openToolStripMenuItem1_Click);
 			// 
 			// pictureBox1
 			// 
@@ -208,14 +208,12 @@ namespace Form_Empty {
 
 			ShearParameters shearParameters;
 			shearParameters.dcompSize = 4;				// K => numbers of YFK
-			shearParameters.dcomp = new int[4]{3, 3, 4, 4};
-			shearParameters.dsize = new int[4]{32, 32, 16, 16};
-			
+			shearParameters.dcomp = new int[4]{ 3, 3, 4, 4 };
+			shearParameters.dsize = new int[4]{ 32, 32, 16, 16 };
+
 			int selectedImages = openFileDialog1->FileNames->GetLength(0);
 
-			int imageSize;
-			float* maxX;
-			float* maxY;
+			int imageSize, * maxX, * maxY;
 			float* IXYBuffer;
 
 			Matrix* image;
@@ -225,17 +223,17 @@ namespace Form_Empty {
 
 
 			// Low and High Frequences Coefficients -- 2D Laplacian Pyramid filters
-			Cont* filters = AtrousFilters(lpfilt);		 
+			Cont* filters = AtrousFilters(lpfilt);
 
 			// New filter coefficients are obtained	-- Only once -- Optional
-			filters->mats[1] = Conv2(filters->mats[1], filters->mats[0], "same");
-			filters->mats[3] = Conv2(filters->mats[3], filters->mats[2], "same");
+			/*filters->mats[1] = Conv2(filters->mats[1], filters->mats[0], "same");
+			filters->mats[3] = Conv2(filters->mats[3], filters->mats[2], "same");*/
 
 
-			Matrix** shearFilterMyer = new Matrix*[shearParameters.dcompSize];
+			Matrix** shearFilterMyer = new Matrix * [shearParameters.dcompSize];
 			for (int i = 0; i < shearParameters.dcompSize; i++)
 				shearFilterMyer[i] = ShearingFiltersMyer(shearParameters.dsize[i], shearParameters.dcomp[i]);
-			
+
 
 			for (int imgIndex = 0; imgIndex < selectedImages; imgIndex++)
 			{
@@ -257,9 +255,9 @@ namespace Form_Empty {
 					imageSize = width * height;
 
 					image = new Matrix(height, width, 1);
-					maxX = new float[imageSize]();		// "Fuzyon Secme Kurali 2" will apply for X. Result will storage in maxX
-					maxY = new float[imageSize]();		// "Fuzyon Secme Kurali 2" will apply for Y. Result will storage in maxY
-					
+					maxX = new int[imageSize]();		// "Fuzyon Secme Kurali 2" will apply for X. Result will storage in maxX
+					maxY = new int[imageSize]();		// "Fuzyon Secme Kurali 2" will apply for Y. Result will storage in maxY
+
 					coefficients = new Cont(5);			// "Fuzyon Secme Kurali 1" will apply for dst. Results will storage in coefficients
 					for (int i = 0; i < 5; i++)
 					{
@@ -276,29 +274,28 @@ namespace Form_Empty {
 				for (int i = 0; i < imageSize; i++)
 				{
 					if (abs(IXYBuffer[i + imageSize]) > abs(maxX[i])) {
-						maxX[i] = IXYBuffer[i + imageSize];			// Cb => X
+						maxX[i] = (int)IXYBuffer[i + imageSize];			// Cb => X
 					}
 					if (abs(IXYBuffer[i + imageSize * 2]) > abs(maxY[i])) {
-						maxY[i] = IXYBuffer[i + imageSize * 2];		// Cr => Y
+						maxY[i] = (int)IXYBuffer[i + imageSize * 2];		// Cr => Y
 					}
 				}
 
-				image->mat = IXYBuffer;								// I => Intensity
+				image->mat = IXYBuffer;										// I => Intensity
 
 				// NSST - Non Subsampled Shearlet Transform
 				dst = NsstDec1e(image, shearParameters, filters, shearFilterMyer);
 				/*	INFO
 					dst->mats[cellIndex][deepIndex]
 					dst->mats[0][0]			=> AFK is 1 piece and deep	 => 1
-					dst->mats[1..4][deep]	=> YFK is 4 pieces and deeps => {8, 8, 16, 16} 
+					dst->mats[1..4][deep]	=> YFK is 4 pieces and deeps => {8, 8, 16, 16}
 				*/
-					
+
 
 				// AFK => "Fuzyon Secme Kurali 1" - step 1
 				for (int i = 0; i < imageSize; i++)
-				{
 					coefficients->mats[0][0].mat[i] += dst->mats[0][0].mat[i];
-				}
+
 				coefficients->mats[0]->depth = depths[0];
 
 				// YFK => "Fuzyon Secme Kurali 2"
@@ -307,50 +304,47 @@ namespace Form_Empty {
 					coefficients->mats[k]->depth = depths[k];
 
 					for (int d = 0; d < depths[k]; d++)
-					{
 						for (int i = 0; i < imageSize; i++)
-						{
 							if (abs(dst->mats[k][d].mat[i]) > abs(coefficients->mats[k][d].mat[i]))
 								coefficients->mats[k][d].mat[i] = dst->mats[k][d].mat[i];
-						}
-					}
 				}
 
 				delete[] buffer;
 				delete[] IXYBuffer;
 				delete dst;
-
 			}
 
 			// AFK => "Fuzyon Secme Kurali 1" - step 2
 			for (int i = 0; i < imageSize; i++)
-				coefficients->mats[0][0].mat[i] /= selectedImages;
-			
+				coefficients->mats[0][0].mat[i] /= float(selectedImages);
 
 			// Inverse NSST
-			Matrix* inverseNSST = NsstRec1(coefficients, lpfilt);
-
+			Matrix* inverseNSST = NsstRec1(coefficients, filters);
 
 			// display result
 			Bitmap^ surface2 = gcnew Bitmap(width, height);
-			pictureBox2->Image = surface2;		// Clear image
+			pictureBox2->Image = surface2;					// focused image
 			Color c2;
 
 			int red, green, blue;
 			float* intensity = inverseNSST->mat;
-			float* Cb = maxX;
-			float* Cr = maxY;
+			int* Cb = maxX;
+			int* Cr = maxY;
 
 			long pos;
 			for (int row = 0; row < height; row++)
 				for (int col = 0; col < width; col++) {
 
 					pos = row * width + col;
-					
+
+					intensity[pos] -= 16.0F;
+					Cb[pos] -= 128;
+					Cr[pos] -= 128;
+
 					// Convert YCbCr to RGB 
-					red = (int)(1.164 * (intensity[pos] - 16) + 1.596 * (Cr[pos] - 128));
-					green = (int)(1.164 * (intensity[pos] - 16) - 0.392 * (Cb[pos] - 128) - 0.813 * (Cr[pos] - 128));
-					blue = (int)(1.164 * (intensity[pos] - 16) + 2.017 * (Cb[pos] - 128));
+					red = (int)(1.164383F * intensity[pos] + 1.596026F * (float)Cr[pos]);
+					green = (int)(1.164383F * intensity[pos] - 0.391762F * (float)Cb[pos] - 0.812967F * (float)Cr[pos]);
+					blue = (int)(1.164383F * intensity[pos] + 2.017232F * (float)Cb[pos]);
 
 					// JPEG Inverse YCbCr
 					/*red = (int)(intensity[pos] + 1.402 * (Cr[pos] - 128));
@@ -373,10 +367,19 @@ namespace Form_Empty {
 			pictureBox1->ImageLocation = openFileDialog1->FileName;
 			labelPath->Text = pictureBox1->ImageLocation;
 
+
 			delete[] maxX;
 			delete[] maxY;
 			delete inverseNSST;
 			delete coefficients;
+			delete[] depths;
+
+			for (int i = 0; i < filters->matNums; i++)
+				delete filters->mats[i];
+
+			for (int i = 0; i < shearParameters.dcompSize; i++)
+				delete[] shearFilterMyer[i];
+			delete[] shearFilterMyer;
 		}
 	}
 	};

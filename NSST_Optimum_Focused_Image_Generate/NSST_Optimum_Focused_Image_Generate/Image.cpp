@@ -126,7 +126,7 @@ float* ConvertBMPToYCbCr(BYTE* Buffer, int width, int height)
 	long bufpos = 0;
 	long newpos = 0;
 
-	BYTE red, green, blue;
+	float red, green, blue;
 
 	for (int row = 0; row < height; row++)
 		for (int column = 0; column < width; column++) {
@@ -138,14 +138,20 @@ float* ConvertBMPToYCbCr(BYTE* Buffer, int width, int height)
 				Buffer[bufpos + 2] => Red
 			*/
 
-			blue = Buffer[bufpos];
-			green = Buffer[bufpos + 1];
-			red = Buffer[bufpos + 2];
+			blue = (float)Buffer[bufpos];
+			green = (float)Buffer[bufpos + 1];
+			red = (float)Buffer[bufpos + 2];
 
-			//// ITU-R BT.601 conversion between[16..240]
-			newbuf[newpos] = (float)(16 + 0.257 * red + 0.504 * green +  0.098 * blue);						// Y  => Intensity
-			newbuf[newpos + imgsize] = (float)(128 - 0.148 * red - 0.291 * green + 0.439 * blue);			// Cb => X
-			newbuf[newpos + imgsize * 2] = (float)(128 + 0.439 * red - 0.368 * green - 0.071 * blue);		// Cr => Y
+
+			newbuf[newpos] = (int)(16.0F + 0.256788F * red + 0.504129F * green + 0.097905F * blue);					// Y  => Intensity
+			newbuf[newpos + imgsize] = (int)(128.0F - 0.148223F * red - 0.290992F * green + 0.439215F * blue);		// Cb => X
+			newbuf[newpos + imgsize * 2] = (int)(128.0F + 0.439215F * red - 0.367788F * green - 0.071427F * blue);	// Cr => Y
+
+
+			// ITU-R BT.601 conversion between[16..240]
+			//newbuf[newpos] = (float)(16 + 0.257 * red + 0.504 * green +  0.098 * blue);					// Y  => Intensity
+			//newbuf[newpos + imgsize] = (float)(128 - 0.148 * red - 0.291 * green + 0.439 * blue);			// Cb => X
+			//newbuf[newpos + imgsize * 2] = (float)(128 + 0.439 * red - 0.368 * green - 0.071 * blue);		// Cr => Y
 
 			// JPEG standard
 			//newbuf[newpos] = (float)(0.299 * red + 0.587 * green + 0.114 * blue);							// Y  => Intensity

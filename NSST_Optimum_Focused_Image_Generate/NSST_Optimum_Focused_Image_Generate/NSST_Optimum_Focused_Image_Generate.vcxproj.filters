@@ -19,15 +19,18 @@
     <ClCompile Include="MatlabFuncs.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="MyForm.cpp">
+    <ClCompile Include="NSST_Focused_Image_Form.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="NSSTFuncs.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="FFT_Conv2D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MyForm.h" />
+    <ClInclude Include="NSST_Focused_Image_Form.h" />
     <ClInclude Include="FFT.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -53,6 +56,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="NSSTFuncs.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="FFT_Conv2D.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

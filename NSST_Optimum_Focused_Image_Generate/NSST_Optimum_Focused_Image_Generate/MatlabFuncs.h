@@ -2,7 +2,7 @@
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 
 
-float realmod(float x, float y);
+float Realmod(float x, float y);
 
 // defined for only dim = 3
 Matrix* Sum(Matrix* mat, int dim);
@@ -11,13 +11,11 @@ float* Eye(int size);
 
 Matrix* EyeMatrix(int size);
 
-float* ones(int width, int height);
+float* Ones(int width, int height);
 
-float* zeros(int width, int height, int depth = 1);
+float* Zeros(int width, int height, int depth = 1);
 
-float* Conv2(float* image, int imageRow, int imageCol, float* kernel, int kernelRow, int kernelCol, char* type = "same");
-
-Matrix* Conv2(Matrix* image, Matrix* kernel, char* type = "same");
+Matrix* Conv2(Matrix* image, const Matrix* kernel, char* type = "same");
 
 float* Fliplr(const float* arry, int height, int width);
 

@@ -86,7 +86,7 @@
 	  fft_odd         :  length n DFT, n odd.
 *************************************************************************/
 
-#define  maxPrimeFactor        37
+#define  maxPrimeFactor        47
 #define  maxPrimeFactorDiv2    (maxPrimeFactor+1)/2
 #define  maxFactorCount        20
 
