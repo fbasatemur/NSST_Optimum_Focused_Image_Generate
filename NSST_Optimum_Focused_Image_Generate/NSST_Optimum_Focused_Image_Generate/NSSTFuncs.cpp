@@ -32,25 +32,23 @@ float* AvgPol(int L, float* x1, float* y1, float* x2, float* y2)
 
 	//int offset;
 	for (int i = 0; i < L; i++)
-		for (int j = 0; j < L; j++)
+		for (int j = 0; j < L; j++) {
 			D[(int)((y1[i * L + j] - 1) * L + (x1[i * L + j] - 1))]++;
-
-	for (int i = 0; i < L; i++)
-		for (int j = 0; j < L; j++)
 			D[(int)((y2[i * L + j] - 1) * L + (x2[i * L + j] - 1))]++;
+		}
 
 	return D;
 }
 
 Matrix* Upsample2df(const Matrix* h, int power) {
 
-	int height = pow(2, power) * h->height;
-	int width = pow(2, power) * h->width;
+	int height = (int)pow(2, power) * h->height;
+	int width = (int)pow(2, power) * h->width;
 
 	Matrix* ho = new Matrix(height, width);
 	ho->mat = Zeros(width, height);
 
-	int step = pow(2, power);
+	int step = (int)pow(2, power);
 	int hStep = 0;
 
 	for (int row = 0; row < height; row += step)
@@ -86,10 +84,10 @@ Matrix* GenXYCoordinates(int n)
 	float* x2 = Zeros(n, n);
 	float* y2 = Zeros(n, n);
 
-	float* xt = Zeros(1, n);
+	float* xt;
 	float* m = Zeros(1, n);
 
-	float y0 = 1.0F, x0, xN, yN;
+	int y0 = 1, x0, xN, yN;
 	int flag;
 	for (int i = 0; i < n; i++)
 	{
@@ -99,7 +97,7 @@ Matrix* GenXYCoordinates(int n)
 
 		if (xN == x0)   flag = 1;
 		else {
-			m[i] = (yN - y0) / (xN - x0);
+			m[i] = (float)(yN - y0) / (float)(xN - x0);
 			flag = 0;
 		}
 
@@ -124,7 +122,7 @@ Matrix* GenXYCoordinates(int n)
 				x2[index] = j + 1;
 			}
 		}
-
+		delete[] xt;
 	}
 
 	--n;
@@ -163,7 +161,7 @@ Matrix* GenXYCoordinates(int n)
 	ret[4].mat = AvgPol(n, x1n_, y1n, x2n, y2n);
 	ret[4].width = n; ret[4].height = n;
 
-	delete[] x1; delete[] y1; delete[] x2; delete[] y2; delete[] xt; delete[] m;
+	delete[] x1; delete[] y1; delete[] x2; delete[] y2; delete[] m;
 
 	return ret;
 }
@@ -261,7 +259,7 @@ Matrix* Windowing(float* x, int lenghtX, int L) {
 	y->depth = 1;
 	y->mat = Zeros(L, N);
 
-	float T = N / L;
+	float T = (float)N / (float)L;
 	float* g = Zeros(2 * T, 1);
 
 	float n = 0;
@@ -307,10 +305,10 @@ Matrix* ShearingFiltersMyer(int n, int level)
 	//gen : [x11, y11, x12, y12, F1]
 	Matrix* gen = GenXYCoordinates(n);
 	float* ones_ = Ones(2 * n, 1);
-	Matrix* wf = Windowing(ones_, 2 * n, pow(2, level));
+	Matrix* wf = Windowing(ones_, 2 * n, (int)pow(2, level));
 	delete[] ones_;
 
-	int size = pow(2, level);
+	int size = (int)pow(2, level);
 
 	Matrix* wS = new Matrix[size];
 
@@ -375,8 +373,8 @@ Matrix* Symext(Matrix* x, const Matrix* h, float* shift)
 	int p = h->height;
 	int q = h->width;
 
-	float p2 = floor(p / 2);
-	float q2 = floor(q / 2);
+	float p2 = floorf(p / 2);
+	float q2 = floorf(q / 2);
 
 	float s1 = shift[0];
 	float s2 = shift[1];
@@ -386,8 +384,6 @@ Matrix* Symext(Matrix* x, const Matrix* h, float* shift)
 
 
 	Matrix* yT, * temp, * temp2, * extentedMatrix;
-	float* lr;
-
 
 	//[fliplr(x(:,1:ss)) x  x(:,n  :-1: n-p-s1+1)]
 	temp = MatrixCut(x->mat, x->height, x->width, 0, x->height - 1, 0, ss - 1); // x(:,1:ss)
@@ -481,12 +477,12 @@ Matrix* Atrousc(Matrix* signal, const Matrix* filter, float* upMatrix)
 	/* Convolution loop */
 	for (n1 = 0; n1 < O_SRowLength; n1++) {
 		for (n2 = 0; n2 < O_SColLength; n2++) {
-			sum = 0;
-			kk1 = n1 + sM0;;
+			sum = 0.0F;
+			kk1 = n1 + sM0;
 			for (k1 = 0; k1 < FRowLength; k1++) {
 				kk2 = n2 + sM3;
+				f1 = SFRowLength - k1;	/* flipped index */
 				for (k2 = 0; k2 < FColLength; k2++) {
-					f1 = SFRowLength - k1;	/* flipped index */
 					f2 = SFColLength - k2;
 					sum += FArray[LINPOS(f1, f2, FColLength)] * SArray[LINPOS(kk1, kk2, SColLength)];
 					kk2 += M3;

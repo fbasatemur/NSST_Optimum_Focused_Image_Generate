@@ -235,6 +235,17 @@ namespace NSST_Focused_Image_Form {
 				shearFilterMyer[i] = ShearingFiltersMyer(shearParameters.dsize[i], shearParameters.dcomp[i]);
 
 
+			Cont* shearF = new Cont(shearParameters.dcompSize);
+			for (int i = 0; i < shearParameters.dcompSize; i++)
+			{
+				size = (int)pow(2, shearParameters.dcomp[i]);	//goruntuye uygulanacak yon sayisi belirlenir.
+				shearF->CreateCells(i, size);
+
+				for (int k = 0; k < size; k++)
+					shearF->mats[i][k] = ScalarMatMul(shearFilterMyer[i][k], sqrt(shearParameters.dsize[i]));
+			}
+
+
 			for (int imgIndex = 0; imgIndex < selectedImages; imgIndex++)
 			{
 				CString path = openFileDialog1->FileNames[imgIndex];
@@ -284,7 +295,7 @@ namespace NSST_Focused_Image_Form {
 				image->mat = IXYBuffer;										// I => Intensity
 
 				// NSST - Non Subsampled Shearlet Transform
-				dst = NsstDec1e(image, shearParameters, filters, shearFilterMyer);
+				dst = NsstDec1e(image, shearParameters, filters, shearF);
 				/*	INFO
 					dst->mats[cellIndex][deepIndex]
 					dst->mats[0][0]			=> AFK is 1 piece and deep	 => 1
@@ -380,6 +391,8 @@ namespace NSST_Focused_Image_Form {
 			for (int i = 0; i < shearParameters.dcompSize; i++)
 				delete[] shearFilterMyer[i];
 			delete[] shearFilterMyer;
+
+			delete shearF;
 		}
 	}
 	};

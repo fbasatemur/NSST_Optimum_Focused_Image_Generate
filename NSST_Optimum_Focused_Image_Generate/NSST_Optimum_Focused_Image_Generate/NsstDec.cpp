@@ -21,40 +21,36 @@
 /// <param name="filters">
 ///		
 /// </param>
-/// <param name="shearFilterMyer"></param>
+/// <param name="shearFilters"></param>
 /// <returns></returns>
-Cont* NsstDec1e(Matrix* image, const ShearParameters& shearParam, Cont* filters, Matrix** shearFilterMyer)
+Cont* NsstDec1e(Matrix* image, const ShearParameters& shearParam, Cont* filters, const Cont* shearFilters)
 {
 	int level = shearParam.dcompSize;
-	
+
 	//Laplacian Pyramid decomposition	//NSLP //cok olceklilik
 	//Katsayilara gore alt-goruntuler elde edilir.
 	Cont* y = AtrousDec(image, filters, level);
-
 	Cont* dst = new Cont(level + 1);
 	dst->mats[0] = y->mats[0];
-	Cont* shearF = new Cont(level);
 
+	int size;
 	for (int i = 0; i < level; i++)
 	{
-		int size = (int)pow(2, shearParam.dcomp[i]);	//goruntuye uygulanacak yon sayisi belirlenir.
-		dst->CreateCells(i+1, size);
-		shearF->CreateCells(i,size);
-		
+		size = (int)pow(2, shearParam.dcomp[i]);	// goruntuye uygulanacak yon sayisi belirlenir.
+		dst->CreateCells(i + 1, size);
+
 		for (int k = 0; k < size; k++) {
-			shearF->mats[i][k] = ScalarMatMul(shearFilterMyer[i][k], sqrt(shearParam.dsize[i]));
-			//dst->mats[i + 1][k] = Conv2(y->mats[i + 1], &shearF->mats[i][k], "same");	 // Cok yonluluk 
-			dst->mats[i + 1][k] = FFTConv2D(y->mats[i + 1], &shearF->mats[i][k], "same");	 // Cok yonluluk 
-		}	
+			//dst->mats[i + 1][k] = Conv2(y->mats[i + 1], &shearF->mats[i][k], "same");			 // Cok yonluluk - Time Domain Conv (TDC), slow
+			dst->mats[i + 1][k] = FFTConv2D(y->mats[i + 1], &shearFilters->mats[i][k], "same");	 // Cok yonluluk - Frequency Domain Conv, faster than TDC
+		}
 		dst->mats[i + 1]->depth = size;
 	}
 
-	delete shearF;
-	size_t depth;
-	for (size_t cell = 1; cell < 5; cell++) {
+	int depth;
+	for (int cell = 1; cell < 5; cell++) {
 
 		depth = y->mats[cell]->depth;
-		for (size_t d = 0; d < depth; d++)
+		for (int d = 0; d < depth; d++)
 			delete[] y->mats[cell][d].mat;
 	}
 

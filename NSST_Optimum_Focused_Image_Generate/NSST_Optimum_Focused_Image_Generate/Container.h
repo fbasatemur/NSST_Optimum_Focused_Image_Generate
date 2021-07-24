@@ -94,10 +94,10 @@ public:
 	~Cont(){
 
 		int depth;
-		for (size_t cell = 0; cell < this->matNums; cell++) {
+		for (int cell = 0; cell < this->matNums; cell++) {
 
 			depth = mats[cell]->depth;
-			for (size_t d = 0; d < depth; d++)
+			for (int d = 0; d < depth; d++)
 				delete[] mats[cell][d].mat;
 		}
 		delete[] mats;

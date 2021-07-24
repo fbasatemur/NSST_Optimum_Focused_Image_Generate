@@ -41,10 +41,10 @@ void CircleShift(float* output, const float* input, int rows, int cols, int yshi
 float* ZeroExtend(const float* x, int sizeX, int sizeY, int exWidth, int exHeight) {
 
 	float* extX = new float[exHeight * exWidth]();
+	unsigned int byteSizeX = sizeX * sizeof(*x);
 
 	for (int r = 0; r < sizeY; r++)
-		for (int c = 0; c < sizeX; c++)
-			extX[r * exWidth + c] = x[r * sizeX + c];
+		memcpy((extX + r * exWidth), (x + r * sizeX), byteSizeX);
 
 	return extX;
 }
@@ -163,10 +163,10 @@ Matrix* FFTConv2D(const Matrix* image, const Matrix* kernel, const char* shape) 
 	else if (!strcmp(shape, "same"))
 	{
 		ret->CreateMatrix(image->height, image->width);
+		unsigned int byteWidth = image->width * sizeof(*outReal);
 
 		for (int r = 0; r < image->height; r++)
-			for (int c = 0; c < image->width; c++)
-				ret->mat[r * ret->width + c] = outReal[r * outWidth + c];
+			memcpy((ret->mat + r * ret->width), (outReal + r * outWidth), byteWidth);
 
 		delete[] outReal;
 	}
@@ -175,10 +175,10 @@ Matrix* FFTConv2D(const Matrix* image, const Matrix* kernel, const char* shape) 
 		int retH = image->height - kernel->height + 1;
 		int retW = image->width - kernel->width+ 1;
 		ret->CreateMatrix(retH, retW);
+		unsigned int byteRetW = retW * sizeof(*outReal);
 
 		for (int r = 0; r < retH; r++)
-			for (int c = 0; c < retW; c++)
-				ret->mat[r * retW + c] = outReal[r * outWidth + c];
+			memcpy((ret->mat + r * retW), (outReal + r * outWidth), byteRetW);
 
 		delete[] outReal;
 	}

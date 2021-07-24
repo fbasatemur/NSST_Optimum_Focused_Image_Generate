@@ -17,6 +17,6 @@
 /// <param name="filters : ">
 ///		
 /// </param>
-/// <param name="shearFilterMyer : "></param>
+/// <param name="shearFilters : "></param>
 /// <returns></returns>
-Cont* NsstDec1e(Matrix* image, const ShearParameters& shearParam, Cont* filters, Matrix** shearFilterMyer);
+Cont* NsstDec1e(Matrix* image, const ShearParameters& shearParam, Cont* filters, const Cont* shearFilters);
